@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>待办清单</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="app">
+
+        <h1>待办清单</h1>
+
+        <!-- 用 form 包起来：这样按回车也能提交，不用只靠点按钮 -->
+        <form class="add-form">
+            <input id="todo-input" type="text" placeholder="要做什么？" autocomplete="off">
+            <button type="submit">添加</button>
+        </form>
+
+        <!-- 空的 ul，JS 会把新条目塞进来 -->
+        <ul id="todo-list" class="todo-list"></ul>
+
+        <!-- 一条都还没有时显示这段提示 -->
+        <p id="empty" class="empty">还没有待办，加一条试试</p>
+
+    </main>
+
+    <!-- 脚本放最后：保证上面所有元素都已经存在，JS 才去抓 -->
+    <script src="app.js"></script>
+
+</body>
+</html>
