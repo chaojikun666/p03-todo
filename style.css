@@ -171,6 +171,17 @@ body {
     border-color: #ff6700;
 }
 
+/* ===== 拖拽排序 ===== */
+/* 鼠标移到任务行上，显示"可以抓"的手型 */
+.todo-item {
+    cursor: grab;
+}
+
+/* 正在被拖的那一行：变淡，告诉用户"它被拎起来了" */
+.todo-item.dragging {
+    opacity: 0.4;
+}
+
 /* ===== 剩余计数 ===== */
 .count {
     margin-bottom: 14px;
