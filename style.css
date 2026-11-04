@@ -260,6 +260,33 @@ body {
     color: var(--text-weak);
 }
 
+/* ===== ⑩ 底部工具栏 ===== */
+.tools {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.tool-btn {
+    flex: 1;
+    height: 38px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-weak);
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
 /* ===== ⑨ 双击编辑 ===== */
 /* 编辑时那个输入框：要和原来的文字"长得像同一行" */
 .todo-edit {

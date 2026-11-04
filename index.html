@@ -36,6 +36,14 @@
         <!-- 一条都还没有时显示这段提示 -->
         <p id="empty" class="empty">还没有待办，加一条试试</p>
 
+        <!-- 底部工具栏：把数据带走 / 拿回来 -->
+        <footer class="tools">
+            <button id="export-btn" type="button" class="tool-btn">导出 JSON</button>
+            <button id="import-btn" type="button" class="tool-btn">导入 JSON</button>
+            <!-- 藏起来的文件选择框：用户看不见，点"导入"时由 JS 替他去点 -->
+            <input id="import-file" type="file" accept=".json,application/json" hidden>
+        </footer>
+
     </main>
 
     <!-- 脚本放最后：保证上面所有元素都已经存在，JS 才去抓 -->

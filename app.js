@@ -1,10 +1,10 @@
 /* ============================================================
    P03 · 待办清单 Pro
-   里程碑 6：双击编辑
+   里程碑 8：导入导出 JSON + 上线
    ------------------------------------------------------------
    ⭐ 这一版最大的变化：
-      以前 —— 想改一句话，只能删了重加
-      现在 —— 双击临时借个输入框，改完还是写回账本
+      以前 —— 数据只活在浏览器里，换台电脑就没了
+      现在 —— 能导出成文件带走，也能把文件导回来
    ============================================================ */
 
 const form  = document.querySelector('.add-form');
@@ -14,6 +14,9 @@ const empty = document.querySelector('#empty');
 const filters = document.querySelector('.filters');
 const count   = document.querySelector('#count');
 const themeBtn = document.querySelector('#theme-btn');
+const exportBtn = document.querySelector('#export-btn');
+const importBtn = document.querySelector('#import-btn');
+const importFile = document.querySelector('#import-file');
 
 /* ============================================================
    ① 数据 —— 真正的「账本」
@@ -288,6 +291,77 @@ themeBtn.addEventListener('click', function () {
 
     applyTheme(next);
     localStorage.setItem('theme', next);   // 记住选择，下次打开还是这个
+});
+
+/* ============================================================
+   ⑫ 导出：把账本打包成一个文件，交给用户
+   ------------------------------------------------------------
+   浏览器里没有"磁盘"，只能造一个临时地址让用户下载。
+   ============================================================ */
+exportBtn.addEventListener('click', function () {
+    if (todos.length === 0) {
+        alert('还没有任务，没什么可导出的');
+        return;
+    }
+
+    const text = JSON.stringify(todos, null, 2);          // 账本 → 能看懂的文字
+    const blob = new Blob([text], { type: 'application/json' });   // 文字 → 文件
+    const url = URL.createObjectURL(blob);                 // 文件 → 临时地址
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '待办清单-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();                                             // 等于点了"下载"
+
+    URL.revokeObjectURL(url);   // 地址用完就回收，不然会一直占内存
+});
+
+
+/* ============================================================
+   ⑬ 导入：让用户挑一个文件，把里面的任务拿回来
+   ------------------------------------------------------------
+   外来数据不能直接信：可能不是 JSON、可能结构不对。
+   ============================================================ */
+importBtn.addEventListener('click', function () {
+    importFile.click();   // 借 JS 的手，去点那个藏起来的文件选择框
+});
+
+importFile.addEventListener('change', function () {
+    const file = importFile.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    /* 读完了才会触发这个回调（读文件是"等一会儿才有结果"的） */
+    reader.addEventListener('load', function () {
+        try {
+            const data = JSON.parse(reader.result);
+
+            if (!Array.isArray(data)) throw new Error('文件里不是一个数组');
+
+            /* 只留下形状对的：必须有 text 字段 */
+            const clean = data
+                .filter(function (item) { return item && typeof item.text === 'string'; })
+                .map(function (item) {
+                    return { text: item.text, done: Boolean(item.done) };
+                });
+
+            if (clean.length === 0) throw new Error('文件里没有找到任务');
+
+            const ok = confirm('导入 ' + clean.length + ' 条任务？\n当前的 ' + todos.length + ' 条会被替换掉。');
+            if (!ok) return;
+
+            todos = clean;
+            save();
+            render();
+        } catch (err) {
+            alert('这个文件读不出来：' + err.message);
+        } finally {
+            importFile.value = '';   // 清空，下次选同一个文件也能触发
+        }
+    });
+
+    reader.readAsText(file);   // 开始读
 });
 
 /* ============================================================
