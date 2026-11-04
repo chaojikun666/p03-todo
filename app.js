@@ -1,10 +1,10 @@
 /* ============================================================
    P03 · 待办清单 Pro
-   里程碑 5：拖拽排序
+   里程碑 6：双击编辑
    ------------------------------------------------------------
    ⭐ 这一版最大的变化：
-      以前 —— 顺序就是"加进来的顺序"，改不了
-      现在 —— 顺序就是账本里的排列，拖完改账本再重画
+      以前 —— 想改一句话，只能删了重加
+      现在 —— 双击临时借个输入框，改完还是写回账本
    ============================================================ */
 
 const form  = document.querySelector('.add-form');
@@ -208,6 +208,57 @@ list.addEventListener('dragend', function () {
     dragIndex = null;
     document.querySelectorAll('.dragging').forEach(function (el) {
         el.classList.remove('dragging');
+    });
+});
+
+/* ============================================================
+   ⑩ 双击编辑：文字临时借一个输入框用一用
+   ------------------------------------------------------------
+   注意：输入框是"临时道具"，不是新的数据。
+        改完还是写回账本 → 存 → 重画，输入框就消失了。
+   ============================================================ */
+list.addEventListener('dblclick', function (event) {
+    const textEl = event.target.closest('.todo-text');
+    if (!textEl) return;
+
+    const li = textEl.closest('.todo-item');
+    const index = Number(li.dataset.index);
+
+    /* ① 造一个输入框，放进原来文字的位置 */
+    const input = document.createElement('input');
+    input.className = 'todo-edit';
+    input.value = todos[index].text;
+
+    textEl.replaceWith(input);   // 用输入框换掉那行文字
+    input.focus();               // 光标直接在里面
+    input.select();              // 顺便全选，方便直接覆盖
+
+    li.draggable = false;        // 编辑时先别让整行被拖走，否则选不中字
+
+    /* ② 收尾只允许发生一次（回车和失焦可能都触发） */
+    let finished = false;
+
+    function finish(commit) {
+        if (finished) return;
+        finished = true;
+
+        const value = input.value.trim();
+
+        if (commit && value !== '') {
+            todos[index].text = value;
+            save();
+        }
+
+        render();   // 无论存不存，都照账本重画：输入框自然消失
+    }
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter')  finish(true);    // 回车 = 存
+        if (e.key === 'Escape') finish(false);   // Esc  = 不改
+    });
+
+    input.addEventListener('blur', function () {
+        finish(true);                            // 点到别处 = 存
     });
 });
 

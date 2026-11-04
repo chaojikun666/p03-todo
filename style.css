@@ -171,6 +171,21 @@ body {
     border-color: #ff6700;
 }
 
+/* ===== 双击编辑 ===== */
+/* 编辑时那个输入框：要和原来的文字"长得像同一行" */
+.todo-edit {
+    flex: 1;
+    height: 30px;
+    padding: 0 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #222;
+    background: #fff;
+    border: 1px solid #ff6700;
+    border-radius: 6px;
+    outline: none;
+}
+
 /* ===== 拖拽排序 ===== */
 /* 鼠标移到任务行上，显示"可以抓"的手型 */
 .todo-item {
