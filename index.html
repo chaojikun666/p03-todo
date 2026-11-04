@@ -17,6 +17,15 @@
             <input id="todo-input" type="text" placeholder="要做什么？" autocomplete="off">
             <button type="submit">添加</button>
         </form>
+        <!-- 三个筛选按钮：data-filter 记着它是哪一档 -->
+        <div class="filters">
+            <button type="button" class="filter-btn active" data-filter="all">全部</button>
+            <button type="button" class="filter-btn" data-filter="active">未完成</button>
+            <button type="button" class="filter-btn" data-filter="done">已完成</button>
+        </div>
+
+        <!-- 剩余计数：JS 每次重画时更新中间那个数字 -->
+        <p class="count">剩余 <span id="count">0</span> 项未完成</p>
 
         <!-- 空的 ul，JS 会把新条目塞进来 -->
         <ul id="todo-list" class="todo-list"></ul>

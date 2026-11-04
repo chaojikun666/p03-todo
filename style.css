@@ -140,3 +140,46 @@ body {
     font-size: 14px;
     color: #b0b0b0;
 }
+/* ===== 筛选栏 ===== */
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.filter-btn {
+    flex: 1;
+    height: 38px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #666;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    border-color: #ff6700;
+    color: #ff6700;
+}
+
+.filter-btn.active {
+    color: #fff;
+    background: #ff6700;
+    border-color: #ff6700;
+}
+
+/* ===== 剩余计数 ===== */
+.count {
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #999;
+}
+
+.count #count {
+    color: #ff6700;
+    font-weight: 700;
+    font-size: 15px;
+}
