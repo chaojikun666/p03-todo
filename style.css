@@ -1,4 +1,40 @@
-/* ===== 基础 ===== */
+/* ============================================================
+   P03 · 待办清单 Pro
+   ------------------------------------------------------------
+   ⭐ 里程碑 7 的关键变化：
+      颜色不再写死在每条规则里，而是"立一次规矩"（CSS 变量）。
+      换主题 = 换一套颜色的值，别的地方一行都不用动。
+   ============================================================ */
+
+/* ===== ① 两套颜色：浅色是默认，深色只负责覆盖 ===== */
+:root {
+    --bg:        #f5f5f7;   /* 页面底色 */
+    --card:      #ffffff;   /* 卡片底色 */
+    --text:      #222222;   /* 主要文字 */
+    --text-weak: #999999;   /* 次要文字 */
+    --line:      #e0e0e0;   /* 边框线 */
+    --item-bg:   #fafafa;   /* 任务行底色 */
+    --item-done: #f4f4f4;   /* 已完成行的底色 */
+    --accent:    #ff6700;   /* 主题橙 */
+    --del:       #c0c0c0;   /* 删除按钮的灰 */
+    --shadow:    0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* body 上有 data-theme="dark" 时，这组值把上面整组替换掉 */
+[data-theme="dark"] {
+    --bg:        #14161a;
+    --card:      #1d2027;
+    --text:      #e8e8e8;
+    --text-weak: #8b929e;
+    --line:      #333844;
+    --item-bg:   #242832;
+    --item-done: #20242c;
+    --accent:    #ff7a1a;
+    --del:       #6b7280;
+    --shadow:    0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== ② 基础 ===== */
 * {
     margin: 0;
     padding: 0;
@@ -9,27 +45,54 @@ body {
     font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
     min-height: 100vh;
     padding: 60px 20px;
-    background: #f5f5f7;
-    color: #222;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;   /* 换主题时渐变，不闪 */
 }
 
-/* ===== 外层卡片 ===== */
+/* ===== ③ 外层卡片 ===== */
 .app {
     max-width: 560px;
     margin: 0 auto;
-    background: #fff;
+    background: var(--card);
     border-radius: 16px;
     padding: 36px 32px 32px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow);
+    transition: background 0.3s;
+}
+
+.app-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
 }
 
 .app h1 {
     font-size: 26px;
     font-weight: 700;
-    margin-bottom: 24px;
 }
 
-/* ===== 添加表单 ===== */
+/* 主题开关：一个小胶囊按钮 */
+.theme-btn {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-weak);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.theme-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* ===== ④ 添加表单 ===== */
 .add-form {
     display: flex;
     gap: 10px;
@@ -42,14 +105,20 @@ body {
     padding: 0 16px;
     font-size: 15px;
     font-family: inherit;
-    border: 1px solid #e0e0e0;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 10px;
     outline: none;
     transition: border-color 0.2s;
 }
 
+.add-form input::placeholder {
+    color: var(--text-weak);
+}
+
 .add-form input:focus {
-    border-color: #ff6700;
+    border-color: var(--accent);
 }
 
 .add-form button {
@@ -58,7 +127,7 @@ body {
     font-size: 15px;
     font-family: inherit;
     color: #fff;
-    background: #ff6700;
+    background: var(--accent);
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -69,7 +138,51 @@ body {
     opacity: 0.85;
 }
 
-/* ===== 列表 ===== */
+/* ===== ⑤ 筛选栏 ===== */
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.filter-btn {
+    flex: 1;
+    height: 38px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-weak);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.filter-btn.active {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* ===== ⑥ 剩余计数 ===== */
+.count {
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--text-weak);
+}
+
+.count #count {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* ===== ⑦ 列表 ===== */
 .todo-list {
     list-style: none;
 }
@@ -81,10 +194,11 @@ body {
     padding: 14px 16px;
     margin-bottom: 8px;
     font-size: 15px;
-    background: #fafafa;
+    background: var(--item-bg);
     border-radius: 10px;
-    border-left: 3px solid #ff6700;
+    border-left: 3px solid var(--accent);
     word-break: break-word;
+    cursor: grab;                 /* 鼠标变"可以抓"的手型 */
     transition: background 0.2s;
 }
 
@@ -94,7 +208,7 @@ body {
     height: 18px;
     flex-shrink: 0;
     cursor: pointer;
-    accent-color: #ff6700;      /* 勾上之后的颜色 */
+    accent-color: var(--accent);   /* 勾上之后的颜色 */
 }
 
 /* 文字占满中间 */
@@ -110,7 +224,7 @@ body {
     flex-shrink: 0;
     font-size: 18px;
     line-height: 1;
-    color: #c0c0c0;
+    color: var(--del);
     background: none;
     border: none;
     border-radius: 50%;
@@ -120,58 +234,33 @@ body {
 
 .todo-del:hover {
     color: #fff;
-    background: #ff6700;
+    background: var(--accent);
 }
 
-/* ⭐ 完成状态：给 li 加上 done 这个 class 就生效 */
+/* 完成状态：给 li 加上 done 这个 class 就生效 */
 .todo-item.done {
-    background: #f4f4f4;
+    background: var(--item-done);
 }
 
 .todo-item.done .todo-text {
-    color: #bbb;
+    color: var(--text-weak);
     text-decoration: line-through;
 }
 
-/* ===== 空状态 ===== */
+/* 正在被拖的那一行：变淡，表示"被拎起来了" */
+.todo-item.dragging {
+    opacity: 0.4;
+}
+
+/* ===== ⑧ 空状态 ===== */
 .empty {
     padding: 28px 0;
     text-align: center;
     font-size: 14px;
-    color: #b0b0b0;
-}
-/* ===== 筛选栏 ===== */
-.filters {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 18px;
+    color: var(--text-weak);
 }
 
-.filter-btn {
-    flex: 1;
-    height: 38px;
-    font-size: 14px;
-    font-family: inherit;
-    color: #666;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.filter-btn:hover {
-    border-color: #ff6700;
-    color: #ff6700;
-}
-
-.filter-btn.active {
-    color: #fff;
-    background: #ff6700;
-    border-color: #ff6700;
-}
-
-/* ===== 双击编辑 ===== */
+/* ===== ⑨ 双击编辑 ===== */
 /* 编辑时那个输入框：要和原来的文字"长得像同一行" */
 .todo-edit {
     flex: 1;
@@ -179,33 +268,9 @@ body {
     padding: 0 8px;
     font-size: 15px;
     font-family: inherit;
-    color: #222;
-    background: #fff;
-    border: 1px solid #ff6700;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--accent);
     border-radius: 6px;
     outline: none;
-}
-
-/* ===== 拖拽排序 ===== */
-/* 鼠标移到任务行上，显示"可以抓"的手型 */
-.todo-item {
-    cursor: grab;
-}
-
-/* 正在被拖的那一行：变淡，告诉用户"它被拎起来了" */
-.todo-item.dragging {
-    opacity: 0.4;
-}
-
-/* ===== 剩余计数 ===== */
-.count {
-    margin-bottom: 14px;
-    font-size: 13px;
-    color: #999;
-}
-
-.count #count {
-    color: #ff6700;
-    font-weight: 700;
-    font-size: 15px;
 }

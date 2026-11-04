@@ -13,6 +13,7 @@ const list  = document.querySelector('#todo-list');
 const empty = document.querySelector('#empty');
 const filters = document.querySelector('.filters');
 const count   = document.querySelector('#count');
+const themeBtn = document.querySelector('#theme-btn');
 
 /* ============================================================
    ① 数据 —— 真正的「账本」
@@ -74,7 +75,7 @@ function render() {
         list.appendChild(li);
     });
 
-    updateEmpty();
+    updateEmpty(visible.length);
     updateCount();
 }
 
@@ -87,8 +88,20 @@ function updateCount() {
     count.textContent = remaining;
 }
 
-function updateEmpty() {
-    empty.style.display = todos.length === 0 ? '' : 'none';
+/* 空状态：什么时候显示、显示什么话，要看情况说 */
+function updateEmpty(visibleCount) {
+    if (todos.length === 0) {
+        empty.textContent = '还没有待办，加一条试试';
+    } else if (visibleCount === 0) {
+        empty.textContent = currentFilter === 'done'
+            ? '还没有已完成的任务，去勾一个吧'
+            : '未完成的任务都清空了，厉害';
+    } else {
+        empty.style.display = 'none';   // 有内容，藏起来
+        return;
+    }
+
+    empty.style.display = '';           // 该显示的时候露出来
 }
 
 
@@ -263,7 +276,23 @@ list.addEventListener('dblclick', function (event) {
 });
 
 /* ============================================================
+   ⑪ 主题：换一套 CSS 变量，不是换一套 CSS
+   ============================================================ */
+function applyTheme(theme) {
+    document.body.dataset.theme = theme;   // 在 body 上贴标记，CSS 自己会换颜色
+    themeBtn.textContent = theme === 'dark' ? '☀️ 浅色' : '🌙 深色';
+}
+
+themeBtn.addEventListener('click', function () {
+    const next = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+
+    applyTheme(next);
+    localStorage.setItem('theme', next);   // 记住选择，下次打开还是这个
+});
+
+/* ============================================================
    ⑦ 启动
    ============================================================ */
 load();
+applyTheme(localStorage.getItem('theme') || 'light');
 render();
