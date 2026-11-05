@@ -26,12 +26,27 @@ let todos = [];
 let currentFilter = 'all';   // 当前在看哪一档：all / active / done
 
 /* ============================================================
-   ② 读：页面打开时，先把上次存的读出来
+   ② 读：从网络上取任务（取不到就用本地缓存顶着）
+   ------------------------------------------------------------
+   async = 「这个函数里会有要等的事」
+   await = 「就等在这里，等它回来再往下走」
    ============================================================ */
-function load() {
-    const raw = localStorage.getItem('todos');
-    if (raw) {
-        todos = JSON.parse(raw);   // 文字 → 数组
+async function load() {
+    try {
+        const res  = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=5');
+        const data = await res.json();     // 响应体也要再等一次
+
+        /* 服务器的字段叫 title / completed，我们的账本叫 text / done，转一下 */
+        todos = data.map(function (item) {
+            return { text: item.title, done: item.completed };
+        });
+
+        save();   // 顺手留一份本地缓存，断网时还能看
+    } catch (err) {
+        console.warn('网络取数据失败，改用本地缓存：', err);
+
+        const raw = localStorage.getItem('todos');
+        if (raw) todos = JSON.parse(raw);
     }
 }
 
@@ -366,7 +381,15 @@ importFile.addEventListener('change', function () {
 
 /* ============================================================
    ⑦ 启动
+   ------------------------------------------------------------
+   现在是：先等网络数据 → 再画。
    ============================================================ */
-load();
-applyTheme(localStorage.getItem('theme') || 'light');
-render();
+async function start() {
+    applyTheme(localStorage.getItem('theme') || 'light');
+
+    await load();   // 等数据回来，才往下走
+
+    render();
+}
+
+start();
